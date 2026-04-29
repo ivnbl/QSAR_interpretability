@@ -1,0 +1,8 @@
+*.png
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+*.onnx
+*.safetensors
