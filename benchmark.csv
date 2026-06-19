@@ -1,0 +1,27 @@
+,group,query_name,chembl_id,pref_name,canonical_smiles,Ki_D2_nM_median,Ki_D2_n,Ki_5HT2A_nM_median,Ki_5HT2A_n,selectivity_D2_over_5HT2A,selectivity_5HT2A_over_D2
+0,Group 1 - 5HT2A selective,risperidone,CHEMBL85,RISPERIDONE,Cc1nc2n(c(=O)c1CCN1CCC(c3noc4cc(F)ccc34)CC1)CCCC2,3.8499999999999996,20,0.5,22,0.12987012987012989,7.699999999999999
+1,Group 1 - 5HT2A selective,ketanserin,CHEMBL1256709,KETANSERIN TARTRATE,O=C(O)C(O)C(O)C(=O)O.O=C(c1ccc(F)cc1)C1CCN(CCn2c(=O)[nH]c3ccccc3c2=O)CC1,,0,,0,,
+2,Group 1 - 5HT2A selective,clozapine,CHEMBL1688,,C[N+]1([O-])CCN(C2=Nc3cc(Cl)ccc3Nc3ccccc32)CC1,,0,,0,,
+3,Group 1 - 5HT2A selective,volinanserin,CHEMBL74355,VOLINANSERIN,COc1cccc([C@H](O)C2CCN(CCc3ccc(F)cc3)CC2)c1OC,1300.0,4,0.31,9,0.00023846153846153847,4193.548387096775
+4,Group 1 - 5HT2A selective,eplivanserin,CHEMBL2103845,EPLIVANSERIN FUMARATE,CN(C)CCO/N=C(/C=C/c1ccc(O)cc1)c1ccccc1F.CN(C)CCO/N=C(/C=C/c1ccc(O)cc1)c1ccccc1F.O=C(O)/C=C/C(=O)O,,0,,0,,
+5,Group 1 - 5HT2A selective,altanserin,CHEMBL1371857,,Cl.O.O=C(c1ccc(F)cc1)C1CCN(CCn2c(=S)[nH]c3ccccc3c2=O)CC1,,0,,0,,
+6,Group 1 - D2 selective,raclopride,CHEMBL2104769,RACLOPRIDE C 11,CCN1CCC[C@H]1CNC(=O)c1c(O)c(Cl)cc(Cl)c1O[11CH3],,0,,0,,
+7,Group 1 - D2 selective,sulpiride,CHEMBL26,SULPIRIDE,CCN1CCCC1CNC(=O)c1cc(S(N)(=O)=O)ccc1OC,38.9,4,,0,,
+8,Group 1 - D2 selective,amisulpride,CHEMBL243712,AMISULPRIDE,CCN1CCCC1CNC(=O)c1cc(S(=O)(=O)CC)c(N)cc1OC,7.795,2,630.96,1,80.94419499679282,0.012354190439964498
+9,Group 1 - D2 selective,L-741626,CHEMBL58832,ASPARAGINE,NC(=O)C[C@H](N)C(=O)O,,0,,0,,
+10,Group 1 - D2 selective,eticlopride,CHEMBL1256917,,CCc1cc(Cl)c(OC)c(C(=O)NC[C@@H]2CCCN2CC)c1O.Cl,,0,,0,,
+11,Group 1 - D2 selective,nemonapride,CHEMBL4303262,,CNc1cc(OC)c(C(=O)N[C@@H]2CCN(Cc3ccccc3)[C@@H]2C)cc1Cl.CNc1cc(OC)c(C(=O)N[C@H]2CCN(Cc3ccccc3)[C@H]2C)cc1Cl,,0,,0,,
+12,Group 1 - D2 selective,remoxipride,CHEMBL3989556,REMOXIPRIDE HYDROCHLORIDE,CCN1CCC[C@H]1CNC(=O)c1c(OC)ccc(Br)c1OC.Cl.O,,0,,0,,
+13,Group 2 - low activity controls,atropine,CHEMBL4557433,,CN1C2CC[C@H]1C[C@@H](OC(=O)[C@H](CO)c1ccccc1)C2,,0,,0,,
+14,Group 2 - low activity controls,naloxone,CHEMBL3249799,,C=CCN1CC[C@@]23c4c5ccc(O)c4O[C@@H]2C(=O)CC[C@]3(O)[C@@H]1C5,,0,,0,,
+15,Group 2 - low activity controls,caffeine,CHEMBL113,CAFFEINE,Cn1c(=O)c2c(ncn2C)n(C)c1=O,,0,,0,,
+16,Group 2 - low activity controls,scopolamine,CHEMBL2251240,SCOPOLAMINE HYDROBROMIDE,Br.CN1[C@@H]2C[C@@H](OC(=O)[C@H](CO)c3ccccc3)C[C@H]1[C@@H]1O[C@@H]12.O.O.O,,0,,0,,
+17,Group 2 - low activity controls,nicotine,CHEMBL3989563,NICOTINE BITARTRATE,CN1CCC[C@H]1c1cccnc1.O.O.O=C(O)C(O)C(O)C(=O)O.O=C(O)C(O)C(O)C(=O)O,,0,,0,,
+18,Group 2 - low activity controls,acetazolamide,CHEMBL20,ACETAZOLAMIDE,CC(=O)Nc1nnc(S(N)(=O)=O)s1,,0,,0,,
+19,Group 2 - low activity controls,furosemide,CHEMBL35,FUROSEMIDE,NS(=O)(=O)c1cc(C(=O)O)c(NCc2ccco2)cc1Cl,,0,,0,,
+20,Group 3 - non-selective / mixed,spiperone,CHEMBL1256875,SPIPERONE HYDROCHLORIDE,Cl.O=C(CCCN1CCC2(CC1)C(=O)NCN2c1ccccc1)c1ccc(F)cc1,,0,,0,,
+21,Group 3 - non-selective / mixed,pimozide,CHEMBL1423,PIMOZIDE,O=c1[nH]c2ccccc2n1C1CCN(CCCC(c2ccc(F)cc2)c2ccc(F)cc2)CC1,11.7,3,,0,,
+22,Group 3 - non-selective / mixed,thioridazine,CHEMBL1200916,THIORIDAZINE HYDROCHLORIDE,CSc1ccc2c(c1)N(CCC1CCCCN1C)c1ccccc1S2.Cl,,0,,0,,
+23,Group 3 - non-selective / mixed,haloperidol,CHEMBL1200986,HALOPERIDOL DECANOATE,CCCCCCCCCC(=O)OC1(c2ccc(Cl)cc2)CCN(CCCC(=O)c2ccc(F)cc2)CC1,1.1300000000000001,2,,0,,
+24,Group 3 - non-selective / mixed,chlorpromazine,CHEMBL71,CHLORPROMAZINE,CN(C)CCCN1c2ccccc2Sc2ccc(Cl)cc21,4.06,9,5.9,5,1.45320197044335,0.6881355932203389
+25,Group 3 - non-selective / mixed,olanzapine,CHEMBL3989694,OLANZAPINE PAMOATE,Cc1cc2c(s1)Nc1ccccc1N=C2N1CCN(C)CC1.O.O=C(O)c1cc2ccccc2c(Cc2c(O)c(C(=O)O)cc3ccccc23)c1O,,0,,0,,
