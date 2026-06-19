@@ -17,28 +17,30 @@ SEED       = 42
 N_FP       = 2048          # Morgan fingerprint size
 N_PHYS     = 9             # number of physicochemical descriptors
 RADIUS     = 2             # Morgan radius (ECFP4)
-ASSAY_TYPES = ['Ki','IC50','EC50','Potency','AC50']
+# assay_types is now a parameter to fetch_curate (default: ['Ki'])
 
 _remover    = SaltRemover()
 _morgan_gen = rdFingerprintGenerator.GetMorganGenerator(radius=RADIUS, fpSize=N_FP)
 
 
 # ── ChEMBL helpers ─────────────────────────────────────────────────────────────
-def fetch_curate(name: str, chembl_id: str) -> pd.DataFrame:
+def fetch_curate(name: str, chembl_id: str,
+                  assay_types: list = None) -> pd.DataFrame:
     """
     Fetch activity data from ChEMBL and curate:
-    - Filter to Ki/IC50/EC50/Potency/AC50 in nM
+    - Filter to specified assay types in nM (default: Ki only)
     - Convert to pChEMBL = 9 - log10(nM)
     - Strip salts, canonicalize SMILES
     - Deduplicate by median pChEMBL per unique structure
     Returns DataFrame with columns: curated_smiles, pChEMBL, molecule_chembl_id
-    """
-    from chembl_webresource_client.new_client import new_client
-    res = new_client.activity.filter(
-        target_chembl_id=chembl_id
-    ).filter(standard_type__in=ASSAY_TYPES).filter(standard_units='nM')
 
-    df = pd.DataFrame(res)
+    assay_types: list of standard_type values to include.
+                 Default ['Ki'] for selectivity modelling.
+                 Pass ['Ki','IC50','EC50','Potency','AC50'] for all types.
+    """
+    if assay_types is None:
+        assay_types = ['Ki']
+    df = _fetch_chembl_activities(chembl_id, assay_types)
     if df.empty:
         print(f"  {name}: no data returned")
         return pd.DataFrame()
@@ -59,6 +61,74 @@ def fetch_curate(name: str, chembl_id: str) -> pd.DataFrame:
     return agg
 
 
+CHEMBL_ACTIVITY_URL = "https://www.ebi.ac.uk/chembl/api/data/activity.json"
+CHEMBL_ACTIVITY_FIELDS = "activity_id,molecule_chembl_id,canonical_smiles,standard_value"
+
+
+def _fetch_chembl_activities(chembl_id: str, assay_types: list) -> pd.DataFrame:
+    """Pull activity rows from ChEMBL (Ki/IC50/… in nM).
+
+    Uses direct REST pagination (limit=1000) instead of chembl_webresource_client,
+    which defaults to 20 rows/page and often hits HTTP 500 on long downloads.
+    """
+    import time
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+    page_size = 1000
+    rows = []
+
+    for atype in assay_types:
+        offset = 0
+        total = None
+        while total is None or offset < total:
+            params = {
+                'target_chembl_id': chembl_id,
+                'standard_type': atype,
+                'standard_units': 'nM',
+                'limit': page_size,
+                'offset': offset,
+                'only': CHEMBL_ACTIVITY_FIELDS,
+            }
+            url = CHEMBL_ACTIVITY_URL + '?' + urllib.parse.urlencode(params)
+            last_err = None
+            for attempt in range(6):
+                try:
+                    with urllib.request.urlopen(url, timeout=120) as resp:
+                        data = json.loads(resp.read().decode())
+                    break
+                except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as err:
+                    last_err = err
+                    if attempt == 5:
+                        raise RuntimeError(
+                            f"ChEMBL fetch failed ({chembl_id}, {atype}, offset={offset}): {err}"
+                        ) from err
+                    wait = 2 ** attempt
+                    print(f"  ChEMBL page error ({chembl_id}, {atype}, offset={offset}), retry in {wait}s...")
+                    time.sleep(wait)
+            else:
+                if last_err:
+                    raise last_err
+
+            meta = data.get('page_meta', {})
+            total = meta.get('total_count', total or 0)
+            batch = data.get('activities', [])
+            if not batch:
+                break
+            rows.extend(batch)
+            offset += len(batch)
+            if len(batch) < page_size:
+                break
+
+    if not rows:
+        return pd.DataFrame()
+    df = pd.DataFrame(rows)
+    if len(assay_types) > 1 and 'activity_id' in df.columns:
+        df = df.drop_duplicates(subset=['activity_id'], keep='first')
+    return df
+
+
 def _curate_smiles(smi: str):
     try:
         mol = Chem.MolFromSmiles(smi)
@@ -76,7 +146,7 @@ def get_fp(smi: str):
     if mol is None:
         return None
     fp  = _morgan_gen.GetFingerprint(mol)
-    arr = np.zeros((0,), dtype=np.int8)
+    arr = np.zeros((N_FP,), dtype=np.int8)
     DataStructs.ConvertToNumpyArray(fp, arr)
     return arr
 
@@ -330,3 +400,33 @@ def draw_fragment_grid(bit_list: list,
     if save_path:
         plt.savefig(save_path, dpi=130, bbox_inches='tight')
     plt.show()
+
+
+
+def three_way_scaffold_split(df, train_frac=0.70, val_frac=0.15, seed=SEED):
+    """
+    Split compounds into train/val/test by Murcko scaffold.
+    Returns (tr_idx, va_idx, te_idx) as numpy arrays.
+    """
+    rng = np.random.RandomState(seed)
+    scaffolds = df['scaffold'].values
+    unique_sc = list(set(scaffolds))
+    rng.shuffle(unique_sc)
+
+    n      = len(df)
+    n_val  = int(n * val_frac)
+    n_test = int(n * (1 - train_frac - val_frac))
+
+    val_sc, test_sc = set(), set()
+    n_va, n_te = 0, 0
+    for sc in unique_sc:
+        cnt = (scaffolds == sc).sum()
+        if n_te < n_test:
+            test_sc.add(sc); n_te += cnt
+        elif n_va < n_val:
+            val_sc.add(sc);  n_va += cnt
+
+    te_idx = np.where(np.isin(scaffolds, list(test_sc)))[0]
+    va_idx = np.where(np.isin(scaffolds, list(val_sc)))[0]
+    tr_idx = np.where(~np.isin(scaffolds, list(test_sc | val_sc)))[0]
+    return tr_idx, va_idx, te_idx

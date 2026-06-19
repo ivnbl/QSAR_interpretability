@@ -6,3 +6,4 @@
 *.pth
 *.onnx
 *.safetensors
+*.npy
